@@ -22,13 +22,16 @@ class AuthController extends Controller
         if (Auth::attempt($request->only('email', 'password'))) {
             $user = Auth::user();
 
-            // Check if user is an admin
+            // Check if user is an admin (Ensure `is_admin` column exists)
             if ($user->is_admin) {
                 // Create token for admin user
                 $token = $user->createToken('admin-token')->plainTextToken;
                 
-                // Return response with token
-                return response()->json(['token' => $token], 200);
+                // Return response with token and token type
+                return response()->json([
+                    'token' => $token,
+                    'token_type' => 'Bearer',
+                ], 200);
             }
 
             // If not admin, return Unauthorized error
@@ -39,3 +42,4 @@ class AuthController extends Controller
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
 }
+// Compare this snippet from app/Models/Song.php:
